@@ -8,10 +8,10 @@ pipeline {
      string(name:'TAG_NAME',defaultValue: '',description:'')
   }
   environment {
-    DOCKERHUB_CREDENTIAL_ID = 'dockerhub-id'
-    GITHUB_CREDENTIAL_ID = 'github-id'
+    DOCKERHUB_CREDENTIAL_ID = 'harbor-id'
+    GITHUB_CREDENTIAL_ID = 'gitlab-id'
     KUBECONFIG_CREDENTIAL_ID = 'demo-kubeconfig'
-    DOCKERHUB_NAMESPACE = 'zhuxiaoyang'
+    DOCKERHUB_NAMESPACE = 'harbor.devops.kubesphere.local:30280/library'
     GTIHUB_ACCOUNT = 'soulseen'
     APP_NAME = 'devops-docs-sample'
   }
@@ -42,10 +42,10 @@ pipeline {
       steps {
         container('nodejs') {
           sh 'yarn build'
-          sh 'docker build -t docker.io/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
+          sh 'docker build -t $DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
           withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKERHUB_CREDENTIAL_ID" ,)]) {
             sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
-            sh 'docker push  docker.io/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER '
+            sh 'docker push  $DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER '
           }
         }
 
@@ -57,8 +57,8 @@ pipeline {
        }
        steps{
          container('nodejs'){
-           sh 'docker tag  docker.io/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER docker.io/$DOCKERHUB_NAMESPACE/$APP_NAME:latest '
-           sh 'docker push  docker.io/$DOCKERHUB_NAMESPACE/$APP_NAME:latest '
+           sh 'docker tag  $DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER $DOCKERHUB_NAMESPACE/$APP_NAME:latest '
+           sh 'docker push  $DOCKERHUB_NAMESPACE/$APP_NAME:latest '
          }
        }
     }

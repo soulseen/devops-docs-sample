@@ -13,7 +13,7 @@ pipeline {
     KUBECONFIG_CREDENTIAL_ID = 'demo-kubeconfig'
     DOCKERHUB_NAMESPACE = 'harbor.devops.kubesphere.local:30280/library'
     GTIHUB_ACCOUNT = 'soulseen'
-    APP_NAME = 'devops-docs-sample'
+    APP_NAME = 'devops-sample'
   }
   stages {
     stage('checkout scm') {

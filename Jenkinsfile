@@ -30,19 +30,18 @@ pipeline {
 
       }
     }
-
-    // stage('unit test') {
-    //   steps {
-    //     container('nodejs') {
-    //       sh 'yarn test'
-    //     }
-    //   }
-    // }
-
-    stage('build & push snapshot') {
+    
+    stage('build app') {
       steps {
         container('nodejs') {
           sh 'yarn build'
+        }
+      }
+    }
+
+    stage('build & push image') {
+      steps {
+        container('nodejs') {
           sh 'docker build -t docker.io/$DOCKERHUB_NAMESPACE/$APP_NAME:SNAPSHOT-$BRANCH_NAME-$BUILD_NUMBER .'
           withCredentials([usernamePassword(passwordVariable : 'DOCKER_PASSWORD' ,usernameVariable : 'DOCKER_USERNAME' ,credentialsId : "$DOCKERHUB_CREDENTIAL_ID" ,)]) {
             sh 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
